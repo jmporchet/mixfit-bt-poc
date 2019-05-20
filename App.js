@@ -14,15 +14,15 @@ export default class SensorsComponent extends Component {
   constructor() {
     super();
     this.manager = new BleManager();
-    this.state = {info: ""};
+    this.state = {info: []};
   }
 
   info(message) {
-    this.setState({info: message});
+    this.setState(prevState => ({info: [...prevState.info, message ]}));
   }
 
   error(message) {
-    this.setState({ info: "ERROR: " + message });
+    this.setState(prevState => ({ info: [...prevState.info, "ERROR: " + message ]}));
   }
 
   componentWillMount() {
@@ -86,7 +86,7 @@ export default class SensorsComponent extends Component {
   render() {
     return (
       <View style={{margin: 50}}>
-        <Text>{this.state.info}</Text>
+        {this.state.info.map((line, idx) => <Text key={idx}>{line}</Text>)}
       </View>
     )
   }
