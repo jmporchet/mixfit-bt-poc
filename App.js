@@ -76,6 +76,20 @@ export default class SensorsComponent extends Component {
         this.info('Sent drink request');
         console.log('characteristic: ', characteristic);
         
+        // not yet implemented
+        // this.manager.monitorCharacteristicForDevice(device.id, deviceStatusServiceUUID, deviceStatusCharUUID, async (err, characteristic) => {
+        //   debugger;
+        //   if (err) { 
+        //     console.log('error in monitor', err);
+
+        //     await this.manager.cancelDeviceConnection(device.id);
+        //     this.info('Disconnected successfully from Mixfit One');
+        //     return;
+        //   }
+        //   // the data format is stored as 16 bit unsigned integer, we need to convert it
+        //   const currentTemp = Buffer.from(characteristic.value, 'base64').readUInt16LE(0) / 128;
+        //   this.info('current temperature ' + currentTemp);
+        // })
         await this.manager.cancelDeviceConnection(device.id).catch(err => { console.log('caught', err)});
         this.info('Disconnected successfully from Mixfit One');
       }
