@@ -24,11 +24,11 @@ export default class SensorsComponent extends Component {
     this.state = {info: []};
   }
 
-  info(message) {
+  displayInfoMessage(message) {
     this.setState(prevState => ({info: [...prevState.info, message ]}));
   }
 
-  error(message) {
+  displayErrorMessage(message) {
     this.setState(prevState => ({ info: [...prevState.info, "ERROR: " + message ]}));
   }
 
@@ -45,41 +45,41 @@ export default class SensorsComponent extends Component {
   scanAndConnect() {
     // start the devices scanning loop
     this.manager.startDeviceScan(null, null, async (error, device) => {
-      this.info("Scanning devices...");
+      this.displayInfoMessage("Scanning devices...");
       // outputs all the devices in range.
       // Apple products will show up repeatedly in this list
       console.log('Scanning device: ', device. name, device.localName);
   
       if (error) {
-        this.error(error.message);
+        this.displayErrorMessage(error.message);
         return
       }
   
       //if the scanned device name contains mixfit or Mixfit
       if (device.localName.indexOf('ixfit') !== -1) {
-        this.info("Mixfit device found");
+        this.displayInfoMessage("Mixfit device found");
         this.setState({ device });
-        this.info('Connecting to Mixfit One...');
+        this.displayInfoMessage('Connecting to Mixfit One...');
 
         this.manager.stopDeviceScan();
-        this.info('stopping device scan');
+        this.displayInfoMessage('stopping device scan');
 
         const deviceInfo = await device.connect();
-        this.info('the Mixfit One is connected');
+        this.displayInfoMessage('the Mixfit One is connected');
         console.log('deviceInfo: ', deviceInfo);
         
         // this is mandatory even if we already know the service/char UUIDs
         await device.discoverAllServicesAndCharacteristics();
         const services = await device.services();
-        this.info('services have been discovered');
+        this.displayInfoMessage('services have been discovered');
         console.log('services: ', services);
         
         const characteristics = await this.manager.characteristicsForDevice(device.id, drinkServiceUUID);
-        this.info('characteristics for the drink service have been discovered');
+        this.displayInfoMessage('characteristics for the drink service have been discovered');
         console.log('characteristics for the drink service: ', characteristics);
         
         const characteristic = await device.writeCharacteristicWithResponseForService(drinkServiceUUID, makeDrinkCharUUID, "AQ==" /* 0x01 in hex */);
-        this.info('Sent drink request');
+        this.displayInfoMessage('Sent drink request');
         console.log('characteristic: ', characteristic);
         
         // // not yet implemented
@@ -87,7 +87,7 @@ export default class SensorsComponent extends Component {
         //   if (err) { 
         //     console.log('error in monitor', err);
         //     await this.manager.cancelDeviceConnection(device.id);
-        //     this.info('Disconnected from Mixfit device due to error when monitoring characteristics of the device');
+        //     this.displayInfoMessage('Disconnected from Mixfit device due to error when monitoring characteristics of the device');
         //     return;
         //   }
         //   // main work look when monitoring a characteristic
@@ -95,11 +95,11 @@ export default class SensorsComponent extends Component {
         //   // this example is for the SensorTag device:
         //   // the data format is stored as 16 bit unsigned integer, we need to convert it
         //   const currentTemp = Buffer.from(characteristic.value, 'base64').readUInt16LE(0) / 128;
-        //   this.info('current temperature ' + currentTemp);
+        //   this.displayInfoMessage('current temperature ' + currentTemp);
         // })
         await this.manager.cancelDeviceConnection(device.id)
-          .then(() => this.info('Disconnected successfully from Mixfit One'))
-          .catch(err => this.info('Error while disconnecting: ' + err));
+          .then(() => this.displayInfoMessage('Disconnected successfully from Mixfit One'))
+          .catch(err => this.displayErrorMessage('while disconnecting: ' + err));
       }
     });
   }
