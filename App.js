@@ -3,11 +3,13 @@ import React, { Component } from 'react';
 import { Platform, View, Text } from 'react-native';
 import { BleManager } from 'react-native-ble-plx';
 
+// SensorTag information
 const deviceId = "337C0420-AB8F-2965-E66A-37DDDC6EB2C0";
 const tempServiceId = "F000AA00-0451-4000-B000-000000000000";
 const writeChar = "F000AA02-0451-4000-B000-000000000000";
 const readChar = "F000AA01-0451-4000-B000-000000000000";
 
+// Mixfit information according to Slack discussions
 const drinkServiceUUID = '125A7D72-9012-421A-AF95-BD6E53B7DD67';
 const makeDrinkCharUUID = '125A7D73-9012-421A-AF95-BD6E53B7DD67';
 const deviceStatusServiceUUID = '10041AE3-17A2-4025-8DB0-00F6AD986120';
@@ -41,8 +43,11 @@ export default class SensorsComponent extends Component {
   }
 
   scanAndConnect() {
+    // start the devices scanning loop
     this.manager.startDeviceScan(null, null, async (error, device) => {
-      this.info("Scanning device...");
+      this.info("Scanning devices...");
+      // outputs all the devices in range.
+      // Apple products will show up repeatedly in this list
       console.log('Scanning device: ', device. name, device.localName);
   
       if (error) {
@@ -50,13 +55,14 @@ export default class SensorsComponent extends Component {
         return
       }
   
-      if (device.localName === 'Mixfit One') {
-        this.info("Mixfit One");
+      //if the scanned device name contains mixfit or Mixfit
+      if (device.localName.indexOf('ixfit') !== -1) {
+        this.info("Mixfit device found");
         this.setState({ device });
         this.info('Connecting to Mixfit One...');
 
         this.manager.stopDeviceScan();
-        this.info('stopping Device scan');
+        this.info('stopping device scan');
 
         const deviceInfo = await device.connect();
         this.info('the Mixfit One is connected');
@@ -76,16 +82,17 @@ export default class SensorsComponent extends Component {
         this.info('Sent drink request');
         console.log('characteristic: ', characteristic);
         
-        // not yet implemented
+        // // not yet implemented
         // this.manager.monitorCharacteristicForDevice(device.id, deviceStatusServiceUUID, deviceStatusCharUUID, async (err, characteristic) => {
-        //   debugger;
         //   if (err) { 
         //     console.log('error in monitor', err);
-
         //     await this.manager.cancelDeviceConnection(device.id);
-        //     this.info('Disconnected successfully from Mixfit One');
+        //     this.info('Disconnected from Mixfit device due to error when monitoring characteristics of the device');
         //     return;
         //   }
+        //   // main work look when monitoring a characteristic
+        //
+        //   // this example is for the SensorTag device:
         //   // the data format is stored as 16 bit unsigned integer, we need to convert it
         //   const currentTemp = Buffer.from(characteristic.value, 'base64').readUInt16LE(0) / 128;
         //   this.info('current temperature ' + currentTemp);
