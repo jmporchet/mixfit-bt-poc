@@ -90,8 +90,9 @@ export default class SensorsComponent extends Component {
         //   const currentTemp = Buffer.from(characteristic.value, 'base64').readUInt16LE(0) / 128;
         //   this.info('current temperature ' + currentTemp);
         // })
-        await this.manager.cancelDeviceConnection(device.id).catch(err => { console.log('caught', err)});
-        this.info('Disconnected successfully from Mixfit One');
+        await this.manager.cancelDeviceConnection(device.id)
+          .then(() => this.info('Disconnected successfully from Mixfit One'))
+          .catch(err => this.info('Error while disconnecting: ' + err));
       }
     });
   }
